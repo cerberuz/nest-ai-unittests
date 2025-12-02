@@ -53,10 +53,14 @@ jobs:
           path: coverage/
           retention-days: 7
 
-  sonarless:
-    name: 🔬 Sonarless Analysis
+  qodana:
+    name: 🔬 Qodana Analysis
     runs-on: ubuntu-latest
     needs: [build-and-test]
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: write
 
     steps:
       - name: 📥 Checkout repository
@@ -64,31 +68,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 📥 Download coverage artifact
-        uses: actions/download-artifact@v4
+      - name: 🔬 Qodana Scan
+        uses: JetBrains/qodana-action@v2024.3
         with:
-          name: coverage
-          path: coverage/
-
-      - name: 🔬 Run Sonarless Analysis
-        uses: gitricko/sonarless@v1
-        with:
-          sonar-project-key: nest-ai-unittests
-          sonar-project-name: NestJS AI Unit Tests
-          sonar-source-path: src
-          sonar-metrics-path: coverage/lcov.info
-
-      - name: 📊 Display Metrics in Summary
-        if: always()
-        run: |
-          echo "## 🔬 Sonarless Analysis Results" >> $GITHUB_STEP_SUMMARY
-          if [ -f ".sonarless/metrics.json" ]; then
-            echo '```json' >> $GITHUB_STEP_SUMMARY
-            cat .sonarless/metrics.json >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-          else
-            echo "⚠️ No metrics found" >> $GITHUB_STEP_SUMMARY
-          fi
+          args: --linter,jetbrains/qodana-js:latest
+        env:
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
 
   e2e:
     name: 🌐 E2E Tests
