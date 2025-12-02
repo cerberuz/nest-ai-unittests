@@ -12,7 +12,15 @@ crear spec de users
 
 agregar todo `it.todo('should create a new user');`
 
+Agregar test A FizzbuzzServices
 
+Mock a FizzBuzz controller
+
+it('shoud return the correct Fizz buzz word for the given number (using spyOn)'
+
+mocking
+
+it('should return the correct Fizz Buzz word according the introduced number (Using mocking de servicios)'
 
 ### Prompts para presetanción
 
