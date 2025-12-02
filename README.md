@@ -6,6 +6,14 @@
 
 `pnpm test`
 
+### Primeras prubeas unitarias
+
+crear spec de users
+
+agregar todo `it.todo('should create a new user');`
+
+
+
 ### Prompts para presetanción
 
 #### Prompt completo (cobertura exhaustiva)

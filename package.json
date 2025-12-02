@@ -76,6 +76,12 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
+    "coveragePathIgnorePatterns": [
+      "\\.module\\.ts$",
+      "main\\.ts$",
+      "\\.dto\\.ts$",
+      "\\.entity\\.ts$"
+    ],
     "testEnvironment": "node",
     "coverageThreshold": {
       "global": {

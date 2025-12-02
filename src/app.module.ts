@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/products.module';
 import { User } from './users/entities/user.entity';
 import { Product } from './products/entities/product.entity';
+import { FizzbuzzModule } from './fizzbuzz/fizzbuzz.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { Product } from './products/entities/product.entity';
     }),
     UsersModule,
     ProductsModule,
+    FizzbuzzModule,
   ],
   controllers: [AppController],
   providers: [AppService],
