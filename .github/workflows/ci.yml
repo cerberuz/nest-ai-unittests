@@ -6,28 +6,30 @@ on:
   pull_request:
     branches: [main, master, develop]
 
-jobs:
-  test:
-    name: 🧪 Unit Tests
-    runs-on: ubuntu-latest
+env:
+  NODE_VERSION: 22.x
+  PNPM_VERSION: 10
 
-    strategy:
-      matrix:
-        node-version: [20.x, 22.x]
+jobs:
+  build-and-test:
+    name: 🔨 Build, Lint & Test
+    runs-on: ubuntu-latest
 
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: 📦 Install pnpm
+      - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: ${{ env.PNPM_VERSION }}
 
-      - name: 🟢 Setup Node.js ${{ matrix.node-version }}
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
 
       - name: 📚 Install dependencies
@@ -36,51 +38,25 @@ jobs:
       - name: 🔨 Build project
         run: pnpm run build
 
-      - name: 🧪 Run unit tests
-        run: pnpm run test
+      - name: 🔍 Lint & Format check
+        run: |
+          pnpm run lint
+          pnpm run format -- --check
 
-      - name: 📊 Run tests with coverage
+      - name: 🧪 Run tests with coverage
         run: pnpm run test:cov
 
-      - name: 📤 Upload coverage report
+      - name: 📤 Upload coverage artifact
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report-node-${{ matrix.node-version }}
+          name: coverage
           path: coverage/
           retention-days: 7
-
-  lint:
-    name: 🔍 Linting
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: 📥 Checkout repository
-        uses: actions/checkout@v4
-
-      - name: 📦 Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-          cache: 'pnpm'
-
-      - name: 📚 Install dependencies
-        run: pnpm install
-
-      - name: 🔍 Run ESLint
-        run: pnpm run lint
-
-      - name: 💅 Check formatting with Prettier
-        run: pnpm run format -- --check
 
   sonarless:
     name: 🔬 Sonarless Analysis
     runs-on: ubuntu-latest
-    needs: [test]
+    needs: [build-and-test]
 
     steps:
       - name: 📥 Checkout repository
@@ -88,22 +64,11 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: 📦 Install pnpm
-        uses: pnpm/action-setup@v4
+      - name: 📥 Download coverage artifact
+        uses: actions/download-artifact@v4
         with:
-          version: 10
-
-      - name: 🟢 Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-          cache: 'pnpm'
-
-      - name: 📚 Install dependencies
-        run: pnpm install
-
-      - name: 📊 Run tests with coverage
-        run: pnpm run test:cov
+          name: coverage
+          path: coverage/
 
       - name: 🔬 Run Sonarless Analysis
         uses: gitricko/sonarless@v1
@@ -116,31 +81,24 @@ jobs:
           sonar-exclusions: "**/node_modules/**,**/dist/**"
           sonar-typescript-lcov-reportpaths: coverage/lcov.info
 
-      - name: 📤 Upload Sonarless report
-        uses: actions/upload-artifact@v4
-        with:
-          name: sonarless-report
-          path: .sonarless/
-          retention-days: 7
-
   e2e:
     name: 🌐 E2E Tests
     runs-on: ubuntu-latest
-    needs: [test, lint]
+    needs: [build-and-test]
 
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
 
-      - name: 📦 Install pnpm
+      - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 10
+          version: ${{ env.PNPM_VERSION }}
 
       - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.x
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'pnpm'
 
       - name: 📚 Install dependencies
@@ -148,4 +106,3 @@ jobs:
 
       - name: 🌐 Run E2E tests
         run: pnpm run test:e2e
-
