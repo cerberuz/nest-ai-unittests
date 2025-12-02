@@ -75,11 +75,8 @@ jobs:
         with:
           sonar-project-key: nest-ai-unittests
           sonar-project-name: NestJS AI Unit Tests
-          sonar-sources: src
-          sonar-tests: src
-          sonar-test-inclusions: "**/*.spec.ts,**/*.e2e-spec.ts"
-          sonar-exclusions: "**/node_modules/**,**/dist/**"
-          sonar-typescript-lcov-reportpaths: coverage/lcov.info
+          sonar-source-path: src
+          sonar-metrics-path: coverage/lcov.info
 
   e2e:
     name: 🌐 E2E Tests
