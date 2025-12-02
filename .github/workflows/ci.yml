@@ -78,6 +78,18 @@ jobs:
           sonar-source-path: src
           sonar-metrics-path: coverage/lcov.info
 
+      - name: 📊 Display Metrics in Summary
+        if: always()
+        run: |
+          echo "## 🔬 Sonarless Analysis Results" >> $GITHUB_STEP_SUMMARY
+          if [ -f ".sonarless/metrics.json" ]; then
+            echo '```json' >> $GITHUB_STEP_SUMMARY
+            cat .sonarless/metrics.json >> $GITHUB_STEP_SUMMARY
+            echo '```' >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ No metrics found" >> $GITHUB_STEP_SUMMARY
+          fi
+
   e2e:
     name: 🌐 E2E Tests
     runs-on: ubuntu-latest
