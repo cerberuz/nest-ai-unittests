@@ -41,7 +41,7 @@ jobs:
       - name: 🔍 Lint & Format check
         run: |
           pnpm run lint
-          pnpm run format -- --check
+          pnpm run format:check
 
       - name: 🧪 Run tests with coverage
         run: pnpm run test:cov
